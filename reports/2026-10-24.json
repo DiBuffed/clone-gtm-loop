@@ -1,0 +1,82 @@
+{
+  "generatedAt": "2026-10-24T08:14:08.026Z",
+  "window": {
+    "startsAt": "2026-10-24T06:00:00.000Z",
+    "endsAt": "2026-10-31T09:00:00.000Z",
+    "timezone": "Asia/Seoul",
+    "closed": false
+  },
+  "product": "YoriGO",
+  "repository": "https://github.com/DiBuffed/clone-gtm-loop",
+  "goals": {
+    "attributed_new_activated_users": 20,
+    "confirmed_publications": 7,
+    "evidence_backed_iterations": 3,
+    "qualified_independent_signals": 20
+  },
+  "baseline": {
+    "total_users": null,
+    "active_users": null,
+    "verified_at": null,
+    "source": "not_connected"
+  },
+  "metrics": {
+    "attributed_new_activated_users": {
+      "value": 0,
+      "target": 20,
+      "measurement": "no_app_events_received"
+    },
+    "confirmed_publications": {
+      "value": 0,
+      "target": 7,
+      "measurement": "confirmed_media_ids"
+    },
+    "evidence_backed_iterations": {
+      "value": 0,
+      "target": 3,
+      "measurement": "observed_decision_and_next_research"
+    },
+    "qualified_independent_signals": {
+      "value": 0,
+      "target": 20,
+      "measurement": "unique_live_source_urls"
+    }
+  },
+  "cohorts": {
+    "eligibleUsers": 0,
+    "activated": 0,
+    "mature": 0,
+    "repeated": 0,
+    "pending": 0
+  },
+  "views": 0,
+  "viewsMeasuredPosts": 0,
+  "verifiedRevenue": {
+    "amount": 0,
+    "currency": "KRW",
+    "orders": 0,
+    "source": "no_verified_orders"
+  },
+  "actualSpendUsd": null,
+  "liveRuns": 1,
+  "testRunsExcluded": 0,
+  "active": [
+    {
+      "id": "05c8bd85-ee56-4981-a4ad-cb2f94c0cd7d",
+      "round": 1,
+      "stage": "research",
+      "status": "pending",
+      "paused": false
+    }
+  ],
+  "published": [],
+  "improvements": [],
+  "runner": {
+    "id": "seven-day-runner",
+    "startedAt": 1792829630223,
+    "lastDay": "2026-10-24",
+    "lastRootId": "05c8bd85-ee56-4981-a4ad-cb2f94c0cd7d",
+    "heartbeat": 1792829630223,
+    "message": "오늘의 루프를 시작했습니다. 키가 없으면 해당 단계에서 중단합니다."
+  }
+}

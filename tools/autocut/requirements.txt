@@ -1,0 +1,8 @@
+# PyPI 0.0.3에는 TextShadow가 없어 GitHub 커밋으로 고정
+pycapcut @ git+https://github.com/GuanYixuan/pyCapCut.git@3e8209add858588e3a29216f5f8e76089559130b
+imageio-ffmpeg>=0.5
+numpy>=1.24
+# 선택: 말소리 받아쓰기·버벅임 컷
+# faster-whisper>=1.0
+# 하이프 자막(Claude API). Python 3.9에서는 1.x를 쓸 수 없어 0.x로 고정
+anthropic>=0.125,<1

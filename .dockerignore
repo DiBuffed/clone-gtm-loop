@@ -1,0 +1,10 @@
+node_modules
+.next
+.git
+.env*
+.gtm-data
+playwright-report
+test-results
+tools/autocut/.venv
+tools/autocut/work
+*.tsbuildinfo

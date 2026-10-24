@@ -1,0 +1,1533 @@
+/* ==========================================================================
+   UGC-Z 랜딩 페이지
+
+   설계 원칙
+
+   1. 상자를 쓰지 않는다. 내용 단위는 헤어라인과 여백으로 나눈다.
+      카드가 여섯 개 있으면 카드가 아니라 목록이다. 상자는 정말로 담는
+      그릇일 때만 쓴다(요금제, 제품 목업).
+   2. 장식을 반복하지 않는다. 아이콘 상자, 태그 칩, 배지, 떠 있는 카드는
+      전부 뺐다. 같은 장식을 여러 번 찍으면 아무것도 강조되지 않는다.
+   3. 활자는 굵기로 이기지 않는다. 큰 글자는 600, 작은 글자는 500~600.
+      자간을 좁혀 크기를 벌고, 줄간격으로 호흡을 만든다.
+   4. 한글에 대문자 변환과 자간 늘리기를 쓰지 않는다. 한글에는 효과가
+      없고 라벨만 이상해진다.
+   5. 강조는 한 가지 방법으로만. .ld-mark 하나, 섹션당 한 곳.
+
+   모든 규칙은 .landing 아래로 스코프해 제품 화면과 충돌하지 않습니다.
+   ========================================================================== */
+
+html:has(.landing) {
+  scroll-behavior: smooth;
+}
+
+.landing {
+  /*
+    워크스페이스와 같은 톤: 흰 캔버스 + 차가운 무채색 + 강조색 하나(시안).
+    변수 이름은 예전 그대로 두고 값만 바꿨다. --ld-green은 이제 강조색이다. 흰 바탕 위
+    글자로 쓰이므로 짙은 청록이고, 어두운 CTA 안의 강조만 밝은 시안(--ld-green-deep)이다.
+  */
+  --ld-canvas: #ffffff;
+  --ld-panel: #ffffff;
+  --ld-ink: #0f1115;
+  --ld-body: #474d56;
+  --ld-muted: #6b717b;
+  --ld-faint: #9ba1aa;
+  --ld-line: #eceef1;
+  --ld-line-strong: #dadde2;
+  --ld-soft: #f7f8f9;
+  --ld-green: #0a7f71;
+  --ld-green-deep: #5debd8;
+  --ld-amber: #8a5a10;
+  --ld-amber-soft: #fbf6ec;
+
+  /*
+    활자 크기. 요소마다 눈대중으로 정하지 않고 역할로 고정한다.
+    예전에는 9.5·10·11.5·12·12.5·13·13.5·14·14.5·15·16·16.5·17·18·19가
+    뒤섞여 있었다. 0.5px 차이는 의도로 읽히지 않고 실수로 읽힌다.
+  */
+  --ld-t-nano: 10px; /* 로고 옆 BETA, 목업 안 작은 숫자 */
+  --ld-t-label: 12px; /* 배지, 표식, 작은 숫자 */
+  --ld-t-meta: 13px; /* 캡션과 보조 문구 */
+  --ld-t-body: 14.5px; /* 본문 */
+  --ld-t-title: 16px; /* 카드와 단계 제목 */
+  --ld-t-lead: 17px; /* 리드 문단 */
+  --ld-t-title-lg: 19px; /* 화면을 반으로 가르는 제목 */
+  --ld-t-figure: 22px; /* 목업 안 수치 */
+  --ld-t-price: 30px; /* 요금 숫자 */
+  --ld-t-pull: clamp(19px, 2.1vw, 24px); /* 결론 한 문장 */
+  --ld-t-h2: clamp(26px, 3vw, 38px);
+  --ld-t-h1: clamp(32px, 5.1vw, 58px);
+
+  /* 둥근 모서리도 세 단계뿐이다. */
+  --ld-r-sm: 8px; /* 버튼, 버거, 세그먼트 바깥 */
+  --ld-r-md: 12px; /* 요금제 카드 */
+  --ld-r-lg: 16px; /* 목업 판, 폰 */
+  --ld-r-full: 999px; /* 알약과 점 */
+
+  background: var(--ld-canvas);
+  color: var(--ld-ink);
+  /* 한글은 어절 단위로 줄을 바꾼다. "촬영/도"처럼 단어 중간에서 끊기지 않게 */
+  word-break: keep-all;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /*
+    hidden이 아니라 clip을 쓴다. hidden은 스크롤 컨테이너를 만들어버리는데,
+    스크롤 타임라인(view())은 가장 가까운 스크롤 컨테이너를 기준으로 계산한다.
+    그러면 뷰포트가 아니라 이 요소가 기준이 되어 모든 등장 효과가 이미 끝난
+    것으로 판정된다. clip은 넘침만 자르고 스크롤 컨테이너를 만들지 않는다.
+  */
+  overflow-x: clip;
+}
+
+.landing ::selection {
+  background: rgb(47 224 200 / 0.25);
+}
+
+.ld-shell {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* 화면에는 안 보이지만 화면 낭독기에는 읽히는 문장. */
+.ld-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --------------------------------------------------------------------------
+   강조 문구 — 도장처럼 찍히는 자리.
+   초록 글자에 옅은 바탕을 깔아 눈에 남게 한다. 섹션마다 한 곳에만 쓴다.
+   -------------------------------------------------------------------------- */
+
+.ld-mark {
+  color: var(--ld-green);
+  background-image: linear-gradient(
+    to top,
+    rgb(47 224 200 / 0.16) 32%,
+    transparent 32%
+  );
+  /* 줄이 바뀌어도 줄마다 바탕이 따로 그려지게 한다. */
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* 어두운 배경에서는 초록이 묻힌다. 밝은 색으로 바꾼다. */
+.ld-cta .ld-mark {
+  color: var(--ld-green-deep);
+  background-image: linear-gradient(
+    to top,
+    rgb(93 235 216 / 0.18) 32%,
+    transparent 32%
+  );
+}
+
+/* 히어로는 글자가 커서 같은 비율이면 띠가 지나치게 넓어진다. */
+.ld-hero .ld-mark {
+  background-image: linear-gradient(
+    to top,
+    rgb(47 224 200 / 0.15) 17%,
+    transparent 17%
+  );
+}
+
+/* --------------------------------------------------------------------------
+   섹션 라벨
+
+   예전에는 대문자 변환 + 자간 0.12em을 걸었다. 한글에는 대문자가 없어서
+   아무 일도 일어나지 않고, 자간만 벌어져 라벨이 깨진 것처럼 보였다.
+   지금은 앞에 짧은 선을 두는 방식이다. 선 자체가 반복되는 장치가 된다.
+   -------------------------------------------------------------------------- */
+
+.ld-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--ld-t-meta);
+  font-weight: 500;
+  color: var(--ld-muted);
+}
+
+.ld-kicker::before {
+  content: "";
+  width: 20px;
+  height: 1px;
+  background: var(--ld-line-strong);
+}
+
+/* --------------------------------------------------------------------------
+   버튼
+
+   알약(999px)은 친근한 인상을 준다. 제품 화면에는 8px가 맞다.
+   알약은 상태 표시(.ld-pill)에만 남긴다.
+   -------------------------------------------------------------------------- */
+
+.ld-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 18px;
+  border: 1px solid transparent;
+  border-radius: var(--ld-r-sm);
+  font-size: var(--ld-t-body);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  transition:
+    background 0.14s ease,
+    border-color 0.14s ease,
+    color 0.14s ease,
+    transform 0.14s ease;
+}
+
+/* 눌리는 느낌만 준다. 떠오르게 하면 장난감처럼 보인다. */
+.ld-btn:active {
+  transform: translateY(0.5px);
+}
+
+/* 아이콘이 있는 버튼에서만 화살표가 살짝 밀린다. 글자만 있는 버튼은 그대로. */
+.ld-btn svg {
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ld-btn:hover svg {
+  transform: translateX(2px);
+}
+
+.ld-btn-primary {
+  background: var(--ld-ink);
+  color: var(--ld-canvas);
+}
+
+.ld-btn-primary:hover {
+  background: var(--ld-green);
+  color: var(--ld-canvas);
+}
+
+.ld-btn-ghost {
+  background: var(--ld-panel);
+  border-color: var(--ld-line-strong);
+  color: var(--ld-ink);
+}
+
+.ld-btn-ghost:hover {
+  background: var(--ld-soft);
+  border-color: #c3c7cd;
+}
+
+.ld-btn-quiet {
+  background: transparent;
+  color: var(--ld-body);
+  padding: 0 10px;
+}
+
+.ld-btn-quiet:hover {
+  color: var(--ld-ink);
+}
+
+.ld-btn-light {
+  background: #ffffff;
+  color: var(--ld-ink);
+}
+
+.ld-btn-light:hover {
+  background: #e9ebee;
+}
+
+.ld-btn-lg {
+  height: 46px;
+  padding: 0 22px;
+  font-size: var(--ld-t-body);
+}
+
+/* --------------------------------------------------------------------------
+   상단 내비게이션
+   -------------------------------------------------------------------------- */
+
+.ld-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.ld-nav-stuck {
+  background: rgb(255 255 255 / 0.85);
+  backdrop-filter: saturate(180%) blur(12px);
+  border-bottom-color: var(--ld-line);
+}
+
+.ld-nav-inner {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  height: 62px;
+}
+
+.ld-brand {
+  display: flex;
+  align-items: center;
+  font-size: var(--ld-t-title-lg);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.ld-brand svg {
+  color: var(--ld-green);
+  margin-right: 7px;
+}
+
+.ld-brand b {
+  color: var(--ld-green);
+}
+
+/* 테두리 배지는 뺐다. 작은 글자만으로 충분하다. */
+.ld-brand small {
+  font-size: var(--ld-t-nano);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--ld-faint);
+  margin-left: 7px;
+}
+
+.ld-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-right: auto;
+}
+
+.ld-nav-links a {
+  position: relative;
+  font-size: var(--ld-t-meta);
+  font-weight: 500;
+  color: var(--ld-body);
+  transition: color 0.14s ease;
+}
+
+/* 밑줄을 왼쪽에서 자라게 한다. 밑줄을 미리 그어두면 메뉴가 시끄러워진다. */
+.ld-nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 1px;
+  background: var(--ld-ink);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ld-nav-links a:hover {
+  color: var(--ld-ink);
+}
+
+.ld-nav-links a:hover::after {
+  transform: scaleX(1);
+}
+
+.ld-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ld-burger {
+  display: none;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--ld-line-strong);
+  border-radius: var(--ld-r-sm);
+  background: var(--ld-panel);
+  align-items: center;
+  justify-content: center;
+}
+
+.ld-nav-mobile {
+  display: none;
+  border-top: 1px solid var(--ld-line);
+  background: var(--ld-canvas);
+  padding: 6px 0 18px;
+}
+
+.ld-nav-mobile a {
+  display: block;
+  padding: 12px 2px;
+  font-size: var(--ld-t-title);
+  font-weight: 500;
+  border-bottom: 1px solid var(--ld-line);
+}
+
+.ld-nav-mobile .ld-nav-mobile-cta {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.ld-nav-mobile .ld-nav-mobile-cta .ld-btn {
+  flex: 1;
+}
+
+/* --------------------------------------------------------------------------
+   히어로
+   -------------------------------------------------------------------------- */
+
+.ld-hero {
+  padding: 84px 0 0;
+  text-align: center;
+}
+
+.ld-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--ld-line);
+  border-radius: var(--ld-r-full);
+  background: var(--ld-soft);
+  font-size: var(--ld-t-label);
+  font-weight: 500;
+  color: var(--ld-body);
+}
+
+.ld-pill i {
+  width: 5px;
+  height: 5px;
+  border-radius: var(--ld-r-full);
+  background: var(--ld-green);
+}
+
+/*
+  62px에 700을 쓰면 둔탁하다. 600으로 내리고 자간을 더 좁혀 크기를 벌린다.
+  text-wrap: balance로 줄바꿈이 고르게 떨어지게 한다.
+*/
+.ld-hero h1 {
+  margin: 24px auto 0;
+  max-width: 900px;
+  font-size: var(--ld-t-h1);
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.ld-hero h1 em {
+  font-style: normal;
+  color: var(--ld-green);
+}
+
+/*
+  후킹 문구가 번갈아 바뀌는 자리.
+  모든 문구를 같은 칸에 겹쳐 두어, 문구마다 길이가 달라도
+  줄 높이가 흔들리지 않는다.
+*/
+.ld-rot {
+  display: grid;
+  justify-items: center;
+}
+
+.ld-rot > span {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transform: translateY(0.14em);
+  transition:
+    opacity 400ms ease,
+    transform 400ms ease;
+}
+
+.ld-rot > span.is-on {
+  opacity: 1;
+  transform: none;
+}
+
+.ld-hero-lead {
+  margin: 22px auto 0;
+  max-width: 560px;
+  font-size: var(--ld-t-lead);
+  line-height: 1.66;
+  color: var(--ld-body);
+  text-wrap: pretty;
+}
+
+.ld-hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.ld-hero-note {
+  /* 가운데 정렬 문장을 폭 제한 없이 두면 한 줄이 너무 길어진다. */
+  max-width: 520px;
+  margin: 16px auto 0;
+  font-size: var(--ld-t-meta);
+  color: var(--ld-muted);
+}
+
+/* --------------------------------------------------------------------------
+   제품 목업
+
+   예전에는 브라우저 창을 그리고 신호등 점 세 개를 찍은 뒤 세로 영상 세 개를
+   나란히 넣었다. 브라우저가 세로 영상을 나란히 보여주는 일은 없으므로
+   그저 장식이었고, 점 세 개는 상투적이었다.
+
+   지금은 제품의 두 축을 그대로 보여준다. 왼쪽은 만들어진 영상, 오른쪽은
+   올라갈 예약과 성과. 브라우저 크롬도, 떠 있는 배지도 없다.
+   -------------------------------------------------------------------------- */
+
+.ld-stage {
+  margin: 60px auto 0;
+  max-width: 920px;
+  padding: 26px;
+  border: 1px solid var(--ld-line);
+  border-radius: var(--ld-r-lg);
+  background: var(--ld-soft);
+  box-shadow:
+    0 1px 2px rgba(13, 17, 16, 0.04),
+    0 28px 52px -34px rgba(13, 17, 16, 0.24);
+  text-align: left;
+}
+
+.ld-stage-grid {
+  display: grid;
+  grid-template-columns: 196px minmax(0, 1fr);
+  gap: 28px;
+  align-items: center;
+}
+
+.ld-phone {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  border-radius: var(--ld-r-lg);
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(13, 17, 16, 0.07),
+    0 14px 26px -16px rgba(13, 17, 16, 0.4);
+}
+
+/* 사진처럼 보이게 채도를 낮춘 그라디언트. */
+.ld-phone-art {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+      105% 62% at 42% 10%,
+      rgba(255, 255, 255, 0.6) 0%,
+      rgba(255, 255, 255, 0) 58%
+    ),
+    linear-gradient(162deg, #c9d4db 0%, #5d7b86 54%, #17262c 100%);
+}
+
+.ld-phone-ui {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 13px;
+}
+
+.ld-phone-prog {
+  display: flex;
+  gap: 3px;
+}
+
+.ld-phone-prog span {
+  flex: 1;
+  height: 2px;
+  border-radius: var(--ld-r-full);
+  background: rgba(255, 255, 255, 0.34);
+}
+
+.ld-phone-prog span:first-child {
+  background: #fff;
+}
+
+.ld-phone-cap {
+  font-size: var(--ld-t-meta);
+  font-weight: 600;
+  line-height: 1.42;
+  letter-spacing: -0.025em;
+  color: #fff;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
+}
+
+.ld-phone-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 9px;
+  font-size: var(--ld-t-nano);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  font-variant-numeric: tabular-nums;
+}
+
+.ld-stage-block h3 {
+  font-size: var(--ld-t-meta);
+  font-weight: 600;
+  color: var(--ld-muted);
+}
+
+.ld-sched {
+  margin-top: 10px;
+}
+
+.ld-sched li {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--ld-line);
+  font-size: var(--ld-t-meta);
+  letter-spacing: -0.01em;
+}
+
+.ld-sched time {
+  font-size: var(--ld-t-meta);
+  color: var(--ld-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.ld-sched em {
+  font-style: normal;
+  font-size: var(--ld-t-label);
+  font-weight: 600;
+  color: var(--ld-green);
+}
+
+.ld-stage-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid var(--ld-line-strong);
+}
+
+.ld-stage-stats strong {
+  display: block;
+  font-size: var(--ld-t-figure);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+}
+
+.ld-stage-stats span {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--ld-t-label);
+  color: var(--ld-muted);
+}
+
+/* --------------------------------------------------------------------------
+   섹션 리듬
+
+   모든 섹션이 같은 여백을 쓰면 평평해진다. 섹션 사이에 전체 폭 헤어라인을
+   두고, 라벨·제목·본문을 전부 왼쪽에 붙인다. 헤어라인이 상자를 대신한다.
+   -------------------------------------------------------------------------- */
+
+.ld-intro,
+.ld-section {
+  margin-top: 96px;
+  padding-top: 76px;
+  border-top: 1px solid var(--ld-line);
+  scroll-margin-top: 76px;
+}
+
+.ld-head {
+  max-width: 660px;
+}
+
+.ld-head h2 {
+  margin-top: 18px;
+  font-size: var(--ld-t-h2);
+  font-weight: 600;
+  line-height: 1.16;
+  letter-spacing: -0.038em;
+  text-wrap: balance;
+}
+
+.ld-head p {
+  margin-top: 16px;
+  max-width: 560px;
+  font-size: var(--ld-t-body);
+  line-height: 1.7;
+  color: var(--ld-body);
+  text-wrap: pretty;
+}
+
+/* --------------------------------------------------------------------------
+   소개 문단
+   -------------------------------------------------------------------------- */
+
+.ld-intro-inner {
+  max-width: 720px;
+}
+
+.ld-intro h2 {
+  margin-top: 18px;
+  font-size: var(--ld-t-h2);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.038em;
+  text-wrap: balance;
+}
+
+.ld-intro-body p {
+  margin-top: 20px;
+  font-size: var(--ld-t-lead);
+  line-height: 1.72;
+  color: var(--ld-body);
+  letter-spacing: -0.008em;
+  text-wrap: pretty;
+}
+
+.ld-intro-body p + p {
+  margin-top: 16px;
+}
+
+.ld-intro-body strong {
+  color: var(--ld-ink);
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   이런 점이 불편하셨죠 — 상자 없이 헤어라인 목록으로
+   -------------------------------------------------------------------------- */
+
+.ld-pains {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 44px;
+  margin-top: 48px;
+}
+
+.ld-pain {
+  padding-top: 22px;
+  border-top: 1px solid var(--ld-line-strong);
+}
+
+.ld-pain h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--ld-t-title);
+  font-weight: 600;
+  letter-spacing: -0.028em;
+}
+
+.ld-pain h3 svg {
+  flex-shrink: 0;
+  color: var(--ld-faint);
+}
+
+.ld-pain p {
+  margin-top: 10px;
+  font-size: var(--ld-t-body);
+  line-height: 1.68;
+  color: var(--ld-body);
+  text-wrap: pretty;
+}
+
+/* 결론 한 문장. 상자에 담지 않고 큰 글자로 세운다. */
+.ld-turn {
+  margin-top: 56px;
+  padding-top: 32px;
+  border-top: 1px solid var(--ld-line);
+  max-width: 720px;
+  font-size: var(--ld-t-pull);
+  font-weight: 600;
+  line-height: 1.48;
+  letter-spacing: -0.032em;
+  color: var(--ld-ink);
+  text-wrap: pretty;
+}
+
+/* --------------------------------------------------------------------------
+   만드는 방법 — 번호 목록
+   -------------------------------------------------------------------------- */
+
+.ld-steps {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 52px;
+  margin-top: 44px;
+}
+
+.ld-step {
+  display: flex;
+  gap: 16px;
+  padding: 24px 0;
+  border-top: 1px solid var(--ld-line-strong);
+}
+
+/* 동그라미 배경을 뺐다. 숫자는 숫자로만 둔다. */
+.ld-step-num {
+  flex-shrink: 0;
+  padding-top: 2px;
+  font-size: var(--ld-t-label);
+  font-weight: 600;
+  color: var(--ld-green);
+  font-variant-numeric: tabular-nums;
+}
+
+.ld-step h3 {
+  font-size: var(--ld-t-title);
+  font-weight: 600;
+  letter-spacing: -0.028em;
+}
+
+.ld-step p {
+  margin-top: 9px;
+  font-size: var(--ld-t-body);
+  line-height: 1.68;
+  color: var(--ld-body);
+  text-wrap: pretty;
+}
+
+.ld-step-meta {
+  display: block;
+  margin-top: 12px;
+  font-size: var(--ld-t-meta);
+  color: var(--ld-muted);
+}
+
+/* 루프 설명. 한 문장 상자를 없애고 규칙선으로만 남긴다. */
+.ld-loop {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 4px;
+  padding-top: 22px;
+  border-top: 1px solid var(--ld-line);
+  font-size: var(--ld-t-body);
+  line-height: 1.66;
+  color: var(--ld-body);
+}
+
+.ld-loop > span {
+  flex-shrink: 0;
+  padding-top: 2px;
+  color: var(--ld-green);
+}
+
+/* --------------------------------------------------------------------------
+   무엇이 들어 있나 — 카드 대신 지수(index)로
+   -------------------------------------------------------------------------- */
+
+.ld-bento {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 48px;
+  row-gap: 40px;
+  margin-top: 48px;
+}
+
+.ld-card {
+  padding-top: 22px;
+  border-top: 1px solid var(--ld-line-strong);
+}
+
+.ld-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--ld-t-title);
+  font-weight: 600;
+  letter-spacing: -0.028em;
+}
+
+.ld-card h3 svg {
+  flex-shrink: 0;
+  color: var(--ld-green);
+}
+
+.ld-card p {
+  margin-top: 10px;
+  font-size: var(--ld-t-body);
+  line-height: 1.68;
+  color: var(--ld-body);
+  text-wrap: pretty;
+}
+
+/* 칩 대신 한 줄. 테두리 네 개가 글자 하나보다 나을 이유가 없다. */
+.ld-meta {
+  margin-top: 14px;
+  font-size: var(--ld-t-meta);
+  color: var(--ld-muted);
+}
+
+/* --------------------------------------------------------------------------
+   화면 구성 — 좌우 대비
+   -------------------------------------------------------------------------- */
+
+.ld-split {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 52px;
+  margin-top: 44px;
+}
+
+.ld-pane {
+  padding-top: 22px;
+  border-top: 1px solid var(--ld-line-strong);
+}
+
+.ld-pane-role {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--ld-t-meta);
+  font-weight: 500;
+  color: var(--ld-muted);
+}
+
+/* 저희 쪽 라벨만 초록. 숫자 대비와 함께 방향을 알려준다. */
+.ld-pane-dark .ld-pane-role {
+  color: var(--ld-green);
+}
+
+.ld-pane h3 {
+  margin-top: 14px;
+  font-size: var(--ld-t-title-lg);
+  font-weight: 600;
+  letter-spacing: -0.032em;
+}
+
+.ld-pane > p {
+  margin-top: 10px;
+  font-size: var(--ld-t-body);
+  line-height: 1.68;
+  color: var(--ld-body);
+  text-wrap: pretty;
+}
+
+.ld-list {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ld-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: var(--ld-t-meta);
+  line-height: 1.6;
+}
+
+.ld-list svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: var(--ld-green);
+}
+
+/*
+  단계 목록. 왼쪽 고객 목록은 한 줄짜리 항목이지만, 이쪽은 단계 이름과
+  설명이 한 쌍이라 한 단으로 흐른다. 두 단으로 나누면 설명이 잘게 부서진다.
+*/
+.ld-pane-tall .ld-list {
+  display: block;
+  margin-top: 24px;
+}
+
+.ld-pane-tall .ld-list li {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 12px;
+  padding: 14px 0;
+  border-top: 1px solid var(--ld-line);
+}
+
+/* 판 자체가 헤어라인으로 시작하므로 첫 줄에는 긋지 않는다. */
+.ld-pane-tall .ld-list li:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.ld-task-num {
+  padding-top: 2px;
+  font-size: var(--ld-t-meta);
+  font-weight: 600;
+  color: var(--ld-green);
+  font-variant-numeric: tabular-nums;
+}
+
+.ld-task strong {
+  display: block;
+  font-size: var(--ld-t-title);
+  font-weight: 600;
+  letter-spacing: -0.028em;
+}
+
+.ld-task p {
+  margin-top: 5px;
+  font-size: var(--ld-t-body);
+  line-height: 1.62;
+  color: var(--ld-body);
+  text-wrap: pretty;
+}
+
+/* --------------------------------------------------------------------------
+   요금제
+   -------------------------------------------------------------------------- */
+
+.ld-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 28px;
+  padding: 3px;
+  border: 1px solid var(--ld-line);
+  border-radius: var(--ld-r-sm);
+  background: var(--ld-soft);
+}
+
+.ld-toggle button {
+  height: 30px;
+  padding: 0 14px;
+  border: 0;
+  /* 바깥 반지름에서 안쪽 여백만큼 뺀다. 임의값이 아니라 계산값이다. */
+  border-radius: calc(var(--ld-r-sm) - 3px);
+  background: transparent;
+  font-size: var(--ld-t-meta);
+  font-weight: 600;
+  color: var(--ld-muted);
+  transition:
+    background 0.14s ease,
+    color 0.14s ease;
+}
+
+.ld-toggle button[aria-pressed="true"] {
+  background: #ffffff;
+  color: var(--ld-ink);
+  box-shadow: 0 1px 2px rgba(13, 17, 16, 0.08);
+}
+
+.ld-plans {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 38px;
+  align-items: start;
+}
+
+.ld-plan {
+  display: flex;
+  flex-direction: column;
+  padding: 28px 26px 30px;
+  border: 1px solid var(--ld-line);
+  border-radius: var(--ld-r-md);
+  background: var(--ld-panel);
+  transition: border-color 0.2s ease;
+}
+
+/* 요금제는 고르는 단위라 테두리가 반응하는 게 맞다. */
+.ld-plan:hover {
+  border-color: var(--ld-line-strong);
+}
+
+.ld-plan-focus {
+  border-color: rgb(47 224 200 / 0.5);
+  background: var(--ld-soft);
+}
+
+.ld-plan-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.ld-plan-top h3 {
+  font-size: var(--ld-t-title);
+  font-weight: 600;
+  letter-spacing: -0.028em;
+}
+
+/* 검은 알약 대신 초록 글자. 배지가 아니라 표시다. */
+.ld-plan-badge {
+  font-size: var(--ld-t-label);
+  font-weight: 600;
+  color: var(--ld-green);
+}
+
+.ld-plan-desc {
+  margin-top: 8px;
+  font-size: var(--ld-t-meta);
+  line-height: 1.6;
+  color: var(--ld-muted);
+  /* 한 줄 설명 길이가 달라도 가격 줄이 맞도록 두 줄 높이를 잡아둔다. */
+  min-height: 42px;
+}
+
+.ld-price {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid var(--ld-line);
+}
+
+.ld-price strong {
+  font-size: var(--ld-t-price);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.ld-price span {
+  font-size: var(--ld-t-meta);
+  color: var(--ld-muted);
+}
+
+.ld-plan .ld-btn {
+  margin-top: 22px;
+  width: 100%;
+}
+
+.ld-plan ul {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.ld-plan li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: var(--ld-t-meta);
+  line-height: 1.6;
+  color: var(--ld-body);
+}
+
+.ld-plan li svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: var(--ld-green);
+}
+
+/* 한 줄짜리 주의문에 노란 상자를 쓰지 않는다. 폭을 묶어야 눈이 덜 피로하다. */
+.ld-plan-note {
+  margin-top: 24px;
+  max-width: 620px;
+  font-size: var(--ld-t-meta);
+  line-height: 1.65;
+  color: var(--ld-muted);
+}
+
+/* --------------------------------------------------------------------------
+   FAQ
+   -------------------------------------------------------------------------- */
+
+.ld-faq {
+  margin-top: 32px;
+  max-width: 780px;
+  border-top: 1px solid var(--ld-line-strong);
+}
+
+.ld-faq-item {
+  border-bottom: 1px solid var(--ld-line);
+}
+
+.ld-faq-q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+  padding: 20px 2px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  font-size: var(--ld-t-title);
+  font-weight: 600;
+  letter-spacing: -0.028em;
+  color: var(--ld-ink);
+}
+
+.ld-faq-q svg {
+  flex-shrink: 0;
+  color: var(--ld-faint);
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.ld-faq-q[aria-expanded="true"] svg {
+  transform: rotate(45deg);
+  color: var(--ld-ink);
+}
+
+.ld-faq-a {
+  max-width: 640px;
+  padding: 0 44px 22px 2px;
+  font-size: var(--ld-t-body);
+  line-height: 1.76;
+  color: var(--ld-body);
+  text-wrap: pretty;
+  animation: ld-fade 0.2s ease both;
+}
+
+/* --------------------------------------------------------------------------
+   마지막 CTA
+   -------------------------------------------------------------------------- */
+
+.ld-cta {
+  margin-top: 96px;
+  padding: 92px 0;
+  /* 흰 페이지 끝의 어두운 한 칸. 위에서 번지는 시안 조명으로 영상 툴 느낌을 남긴다 */
+  background:
+    radial-gradient(70% 120% at 50% 0%, rgb(47 224 200 / 0.16), transparent 62%),
+    #0f1115;
+  color: #fff;
+}
+
+.ld-cta .ld-kicker {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.ld-cta .ld-kicker::before {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.ld-cta h2 {
+  margin-top: 20px;
+  max-width: 620px;
+  font-size: var(--ld-t-h2);
+  font-weight: 600;
+  line-height: 1.14;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.ld-cta p {
+  margin-top: 18px;
+  max-width: 480px;
+  font-size: var(--ld-t-body);
+  line-height: 1.68;
+  color: rgba(255, 255, 255, 0.66);
+  text-wrap: pretty;
+}
+
+.ld-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.ld-cta-note {
+  margin-top: 18px;
+  font-size: var(--ld-t-meta);
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* --------------------------------------------------------------------------
+   푸터
+   -------------------------------------------------------------------------- */
+
+.ld-footer {
+  padding: 64px 0 40px;
+  border-top: 1px solid var(--ld-line);
+}
+
+/* 자식이 셋인데 예전에는 네 칸을 잡아 마지막 칸이 비어 있었다. */
+.ld-footer-grid {
+  display: grid;
+  grid-template-columns: 1.7fr 1fr 1fr;
+  gap: 40px;
+}
+
+.ld-footer-about p {
+  margin-top: 14px;
+  max-width: 300px;
+  font-size: var(--ld-t-meta);
+  line-height: 1.7;
+  color: var(--ld-muted);
+  text-wrap: pretty;
+}
+
+.ld-footer h3 {
+  font-size: var(--ld-t-meta);
+  font-weight: 600;
+  color: var(--ld-ink);
+}
+
+.ld-footer-col ul {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ld-footer-col a {
+  font-size: var(--ld-t-meta);
+  color: var(--ld-muted);
+  transition: color 0.14s ease;
+}
+
+.ld-footer-col a:hover {
+  color: var(--ld-ink);
+}
+
+.ld-footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 48px;
+  padding-top: 22px;
+  border-top: 1px solid var(--ld-line);
+  font-size: var(--ld-t-meta);
+  color: var(--ld-muted);
+}
+
+.ld-footer-bottom div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.ld-footer-bottom span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* --------------------------------------------------------------------------
+   애니메이션
+   -------------------------------------------------------------------------- */
+
+@keyframes ld-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ld-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.ld-up {
+  animation: ld-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.ld-up-1 {
+  animation-delay: 0.04s;
+}
+
+.ld-up-2 {
+  animation-delay: 0.1s;
+}
+
+.ld-up-3 {
+  animation-delay: 0.16s;
+}
+
+.ld-up-4 {
+  animation-delay: 0.22s;
+}
+
+/* --------------------------------------------------------------------------
+   스크롤에 따라 살짝 떠오르기
+
+   숨김 상태(.ld-reveal)는 ScrollReveal 컴포넌트가 직접 붙이고 뗀다. CSS에
+   미리 숨겨두면 스크립트가 실패했을 때 내용이 투명한 채로 남는다.
+   -------------------------------------------------------------------------- */
+
+.ld-reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ld-reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:has(.landing) {
+    scroll-behavior: auto;
+  }
+
+  .ld-rot > span,
+  .ld-btn,
+  .ld-btn svg,
+  .ld-plan,
+  .ld-faq-q svg,
+  .ld-nav-links a::after,
+  .ld-reveal {
+    transition: none;
+  }
+
+  .ld-up,
+  .ld-faq-a {
+    animation: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   반응형
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 1000px) {
+  .ld-nav-links {
+    display: none;
+  }
+
+  .ld-burger {
+    display: flex;
+  }
+
+  .ld-nav-mobile.open {
+    display: block;
+  }
+
+  /*
+    예전에는 .ld-btn-ghost를 숨기라고 되어 있었지만, 내비게이션에는 primary
+    버튼만 있어서 이 규칙은 한 번도 적용된 적이 없다. 그 탓에 좁은 화면에서
+    버튼과 버거가 한 줄에 들어가지 못하고 버거가 화면 밖으로 밀렸다.
+    로그인만 남기고 나머지는 접힌 메뉴에 맡긴다.
+  */
+  .ld-nav-actions .ld-btn-primary {
+    display: none;
+  }
+
+  .ld-bento {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ld-plans {
+    grid-template-columns: 1fr;
+    max-width: 460px;
+  }
+
+  .ld-plan-desc {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .ld-hero {
+    padding-top: 60px;
+  }
+
+  .ld-intro,
+  .ld-section {
+    margin-top: 72px;
+    padding-top: 56px;
+  }
+
+  .ld-pains,
+  .ld-steps,
+  .ld-split {
+    grid-template-columns: 1fr;
+    row-gap: 32px;
+  }
+
+  /* 목업 판의 여백을 줄인다. */
+  .ld-stage {
+    padding: 20px;
+  }
+
+  .ld-stage-grid {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 22px;
+  }
+
+  .ld-phone {
+    width: 180px;
+  }
+
+  .ld-stage-side {
+    width: 100%;
+  }
+
+  .ld-footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  .ld-cta {
+    margin-top: 72px;
+    padding: 68px 0;
+  }
+}
+
+@media (max-width: 620px) {
+  .ld-hero h1 {
+    letter-spacing: -0.038em;
+  }
+
+  .ld-bento {
+    grid-template-columns: 1fr;
+    row-gap: 32px;
+  }
+
+  .ld-hero-cta .ld-btn,
+  .ld-cta-actions .ld-btn {
+    width: 100%;
+  }
+
+  .ld-stage-stats {
+    gap: 10px;
+  }
+
+  .ld-stage-stats strong {
+    /* 좁은 화면에서 22px는 세 칸에 안 들어간다. 한 단계 낮춘다. */
+    font-size: var(--ld-t-title-lg);
+  }
+
+  .ld-sched li {
+    grid-template-columns: 62px minmax(0, 1fr) auto;
+    gap: 9px;
+    font-size: var(--ld-t-meta);
+  }
+
+  .ld-footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ld-step {
+    gap: 14px;
+  }
+
+  .ld-turn {
+    margin-top: 40px;
+  }
+}

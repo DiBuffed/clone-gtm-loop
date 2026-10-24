@@ -1,0 +1,14 @@
+{
+  "product": "YoriGO",
+  "product_url": "https://yorigo.kr/",
+  "repository": "https://github.com/DiBuffed/clone-gtm-loop",
+  "evaluation_timezone": "Asia/Seoul",
+  "starts_at": "2026-10-24T06:00:00.000Z",
+  "ends_at": "2026-10-31T09:00:00.000Z",
+  "goals_locked_before_results": true,
+  "goals": {"attributed_new_activated_users": 20, "confirmed_publications": 7, "evidence_backed_iterations": 3, "qualified_independent_signals": 20},
+  "baseline": {"total_users": null, "active_users": null, "verified_at": null, "source": "not_connected"},
+  "activation_definition": "new eligible non-test user generates their first recipe and saves the same recipe within 24 hours",
+  "revenue_definition": "verified order or affiliate settlement only; shopping clicks are not revenue",
+  "status": "awaiting_live_connections"
+}

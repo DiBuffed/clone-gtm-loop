@@ -1,0 +1,36 @@
+{
+  "name": "clone-gtm-loop",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --hostname 0.0.0.0",
+    "studio": "next dev --hostname 127.0.0.1",
+    "build": "next build",
+    "start": "next start --hostname 0.0.0.0",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "node --import tsx --test tests/domain.test.ts tests/autocut.test.ts",
+    "test:e2e": "playwright test",
+    "gtm:worker": "node --env-file-if-exists=.env.local --import tsx tools/gtm/worker.ts",
+    "test:gtm": "node --import tsx --test tests/gtm.test.ts",
+    "test:loop": "node --import tsx --test tests/loop.test.ts",
+    "seven-day:prepare": "node --env-file-if-exists=.env.local --import tsx tools/seven-day/prepare.ts",
+    "seven-day:run": "node --env-file-if-exists=.env.local --import tsx tools/seven-day/run.ts",
+    "seven-day:status": "node --env-file-if-exists=.env.local --import tsx tools/seven-day/run.ts --status",
+    "test:mission": "node --import tsx --test tests/mission.test.ts"
+  },
+  "dependencies": {
+    "next": "16.3.5",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "lucide-react": "^0.468.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@playwright/test": "^1.55.0",
+    "tsx": "^4.20.0"
+  }
+}

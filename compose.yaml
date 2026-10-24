@@ -1,0 +1,36 @@
+# One web process and one worker, on the same host and shared local volume.
+# Set GTM_PUBLIC_URL to the externally reachable HTTPS origin behind your TLS proxy.
+services:
+  web:
+    build: .
+    init: true
+    restart: unless-stopped
+    env_file: .env.local
+    environment:
+      GTM_DATA_DIR: /data
+      AUTOCUT_LOCAL: "0"
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - gtm-data:/data
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/gtm').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+  worker:
+    build: .
+    init: true
+    command: ["npm", "run", "gtm:worker"]
+    restart: unless-stopped
+    env_file: .env.local
+    environment:
+      GTM_DATA_DIR: /data
+      AUTOCUT_LOCAL: "0"
+    volumes:
+      - gtm-data:/data
+    depends_on:
+      web:
+        condition: service_healthy
+volumes:
+  gtm-data:

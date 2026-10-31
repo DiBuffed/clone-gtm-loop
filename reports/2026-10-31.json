@@ -1,0 +1,230 @@
+{
+  "generatedAt": "2026-10-31T08:53:23.320Z",
+  "window": {
+    "startsAt": "2026-10-24T06:00:00.000Z",
+    "endsAt": "2026-10-31T09:00:00.000Z",
+    "timezone": "Asia/Seoul",
+    "closed": true
+  },
+  "product": "YoriGO",
+  "repository": "https://github.com/DiBuffed/clone-gtm-loop",
+  "goals": {
+    "attributed_new_activated_users": 20,
+    "confirmed_publications": 7,
+    "evidence_backed_iterations": 3,
+    "qualified_independent_signals": 20
+  },
+  "metrics": {
+    "confirmed_publications": {
+      "value": 96,
+      "target": 7,
+      "measurement": "instagram_media_ids",
+      "status": "achieved"
+    },
+    "evidence_backed_iterations": {
+      "value": 5,
+      "target": 3,
+      "measurement": "docs/ITERATIONS.md",
+      "status": "achieved"
+    },
+    "attributed_new_activated_users": {
+      "value": null,
+      "target": 20,
+      "measurement": "no_attribution_link_between_reels_and_installs",
+      "status": "not_measurable"
+    },
+    "qualified_independent_signals": {
+      "value": null,
+      "target": 20,
+      "measurement": "not_tallied",
+      "status": "not_tallied"
+    }
+  },
+  "reach": {
+    "views": 15732,
+    "viewsMeasuredPosts": 96,
+    "accounts": 11,
+    "postsOver1000": 6,
+    "postsOver100": 64,
+    "uniqueHooks": 51,
+    "viewsFetchedAt": "2026-10-31T04:43:00Z",
+    "excluded": [
+      {
+        "handle": "yejin.jubu",
+        "ig_media_id": "18113029766033042",
+        "views": 1504,
+        "reason": "posted before event start"
+      }
+    ]
+  },
+  "daily": {
+    "10-25": {
+      "posts": 1,
+      "views": 1416,
+      "accounts": 1
+    },
+    "10-26": {
+      "posts": 14,
+      "views": 2839,
+      "accounts": 7
+    },
+    "10-27": {
+      "posts": 13,
+      "views": 2458,
+      "accounts": 7
+    },
+    "10-28": {
+      "posts": 13,
+      "views": 2149,
+      "accounts": 7
+    },
+    "10-29": {
+      "posts": 22,
+      "views": 3392,
+      "accounts": 11
+    },
+    "10-30": {
+      "posts": 22,
+      "views": 2490,
+      "accounts": 11
+    },
+    "10-31": {
+      "posts": 11,
+      "views": 988,
+      "accounts": 11
+    }
+  },
+  "accounts": [
+    {
+      "handle": "yejin.jubu",
+      "role": "hub",
+      "posts": 13,
+      "views": 9116,
+      "avg": 701,
+      "max": 1416
+    },
+    {
+      "handle": "jieunnie9",
+      "role": "satellite",
+      "posts": 10,
+      "views": 1551,
+      "avg": 155,
+      "max": 207
+    },
+    {
+      "handle": "yujin.kidsplate",
+      "role": "satellite",
+      "posts": 11,
+      "views": 1285,
+      "avg": 117,
+      "max": 142
+    },
+    {
+      "handle": "junho.mealprep",
+      "role": "satellite",
+      "posts": 10,
+      "views": 1128,
+      "avg": 113,
+      "max": 145
+    },
+    {
+      "handle": "sumin.jubu",
+      "role": "satellite",
+      "posts": 10,
+      "views": 964,
+      "avg": 96,
+      "max": 158
+    },
+    {
+      "handle": "jiwoo00o",
+      "role": "satellite",
+      "posts": 11,
+      "views": 612,
+      "avg": 56,
+      "max": 144
+    },
+    {
+      "handle": "sohyeonnie.e",
+      "role": "satellite",
+      "posts": 11,
+      "views": 606,
+      "avg": 55,
+      "max": 127
+    },
+    {
+      "handle": "seoyeon.afterwork9",
+      "role": "satellite",
+      "posts": 5,
+      "views": 355,
+      "avg": 71,
+      "max": 134
+    },
+    {
+      "handle": "haeunnn1",
+      "role": "satellite",
+      "posts": 5,
+      "views": 111,
+      "avg": 22,
+      "max": 111
+    },
+    {
+      "handle": "suaaa.96",
+      "role": "satellite",
+      "posts": 5,
+      "views": 4,
+      "avg": 1,
+      "max": 1
+    },
+    {
+      "handle": "jieun.tableee",
+      "role": "satellite",
+      "posts": 5,
+      "views": 0,
+      "avg": 0,
+      "max": 0
+    }
+  ],
+  "ctaTest": {
+    "withCommentCta": {
+      "posts": 4,
+      "avgViews": 1243
+    },
+    "withoutCta": {
+      "posts": 92,
+      "avgViews": 117
+    },
+    "caveat": "all CTA posts on hub account"
+  },
+  "mixpanelSignUps": {
+    "source": "Mixpanel sign_up, board Yorigo 핵심 제품 지표",
+    "before_10_17_to_10_23": [
+      1,
+      7,
+      2,
+      9,
+      6,
+      4,
+      6
+    ],
+    "loop_10_24_to_10_30": [
+      6,
+      7,
+      1,
+      7,
+      1,
+      7,
+      2
+    ],
+    "totals": {
+      "before": 35,
+      "loop": 31
+    },
+    "note": "not attributable to the loop; no UTM/deep link"
+  },
+  "verifiedRevenue": {
+    "amount": 0,
+    "currency": "KRW",
+    "orders": 0,
+    "source": "no_verified_orders"
+  }
+}

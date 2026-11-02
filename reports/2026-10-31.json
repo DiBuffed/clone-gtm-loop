@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-10-31T08:53:23.320Z",
+  "generatedAt": "2026-11-02T10:03:13.991Z",
   "window": {
-    "startsAt": "2026-10-24T06:00:00.000Z",
+    "startsAt": "2026-10-24T10:00:00.000Z",
     "endsAt": "2026-10-31T09:00:00.000Z",
     "timezone": "Asia/Seoul",
     "closed": true
@@ -28,10 +28,10 @@
       "status": "achieved"
     },
     "attributed_new_activated_users": {
-      "value": null,
+      "value": 16,
       "target": 20,
-      "measurement": "no_attribution_link_between_reels_and_installs",
-      "status": "not_measurable"
+      "measurement": "loop_attributed_ios_first_downloads_10_25_to_10_29_utc",
+      "status": "tracked"
     },
     "qualified_independent_signals": {
       "value": null,
@@ -219,12 +219,25 @@
       "before": 35,
       "loop": 31
     },
-    "note": "not attributable to the loop; no UTM/deep link"
+    "loop_10_25_to_10_30_avg": 4.2
   },
   "verifiedRevenue": {
     "amount": 0,
     "currency": "KRW",
     "orders": 0,
     "source": "no_verified_orders"
+  },
+  "iosFirstDownloads": {
+    "loop_10_25_to_10_29_utc": 16,
+    "attribution": "loop",
+    "fiveDayBlocks": {
+      "9/30~10/4": 12,
+      "10/5~10/9": 7,
+      "10/10~10/14": 11,
+      "10/15~10/19": 9,
+      "10/20~10/24": 14,
+      "10/25~10/29": 16
+    },
+    "indexVsOct1to16": 177
   }
 }
